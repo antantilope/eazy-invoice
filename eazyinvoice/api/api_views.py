@@ -9,7 +9,7 @@ from api.models import Organization, HourlyRate, HoursEntry
 from api.api_forms import (
     NewHoursEntryForm,
 )
-from api.lib import invoice_lib
+from api.services import invoice_lib
 
 
 @api_view(['POST'])

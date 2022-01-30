@@ -11,7 +11,7 @@ from django.utils import timezone
 
 from api.models import HoursEntry, Organization, Invoice
 from api.login_form import LoginForm
-from api.lib import invoice_lib
+from api.services import invoice_lib
 from eazyinvoice.secrets import get_auth_code
 
 
