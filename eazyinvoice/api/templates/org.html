@@ -79,6 +79,7 @@
             <th>Due</th>
             <th>Amount</th>
             <th></th>
+            <th></th>
         </tr>
         {% for inv in invoices %}
             <tr>
@@ -101,6 +102,11 @@
                     >
                         Download
                     </a>
+                </td>
+                <td>
+                    <button onclick="deleteInvoice('{{ inv.id }}')">
+                        🗑️
+                    </button>
                 </td>
             </tr>
         {% endfor %}
@@ -163,6 +169,19 @@
         const url = "{% url 'api-create-invoice' orgId=org.id %}"
         const resp = await postData(url, {})
         if (resp.status === 201) {
+            location.reload()
+        } else {
+            alert("An error occured")
+        }
+    }
+
+    async function deleteInvoice(invoiceId) {
+        if (!confirm("Are you sure you want to delete invoice " + invoiceId + "?")) {
+            return
+        }
+        const url = `/api/orgs/{{ org.id }}/invoice/${invoiceId}/delete/`
+        const resp = await postData(url, {})
+        if (resp.status === 204) {
             location.reload()
         } else {
             alert("An error occured")

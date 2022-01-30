@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 
-from api.models import Organization, HourlyRate, HoursEntry
+from api.models import Organization, HourlyRate, HoursEntry, Invoice
 from api.api_forms import (
     NewHoursEntryForm,
 )
@@ -69,3 +69,16 @@ def create_invoice(request, orgId: str):
 
     invoice = invoice_lib.create_invoice_for_entries(org, entries)
     return Response({'id': invoice.id}, status.HTTP_201_CREATED)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def delete_invoice(request, orgId: str, invoiceId: str):
+    org = get_object_or_404(Organization, id=orgId, user=request.user)
+    invoice = get_object_or_404(
+        Invoice,
+        organization=org,
+        id=invoiceId,
+    )
+    invoice.delete()
+    return Response({}, status.HTTP_204_NO_CONTENT)
