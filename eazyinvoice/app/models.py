@@ -39,6 +39,9 @@ class UserProfile(BaseModel):
         max_length=24,
     )
 
+    def __str__(self):
+        return "UP " + self.user.username
+
 
 class Organization(BaseModel):
     user = models.ForeignKey(
@@ -72,6 +75,9 @@ class Organization(BaseModel):
         max_length=24,
     )
 
+    def __str__(self):
+        return "ORG " + self.short_name
+
 
 class Invoice(BaseModel):
     organization = models.ForeignKey(
@@ -90,6 +96,10 @@ class Invoice(BaseModel):
             'invoice_number',
         )
 
+    def __str__(self):
+        return "INV " + self.invoice_number
+
+
 
 class HourlyRate(BaseModel):
     rate = models.DecimalField(
@@ -100,6 +110,11 @@ class HourlyRate(BaseModel):
         Organization,
         on_delete=models.CASCADE,
     )
+
+    def __str__(self):
+        return "Rate " + str(self.rate)
+
+
 
 
 class HoursEntry(BaseModel):
@@ -125,3 +140,6 @@ class HoursEntry(BaseModel):
         null=True,
         default=None,
     )
+
+    def __str__(self):
+        return "Entry " + str(self.date)
