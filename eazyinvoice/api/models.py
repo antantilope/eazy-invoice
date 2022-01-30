@@ -57,6 +57,7 @@ class Organization(BaseModel):
         null=True,
         default=None,
     )
+    days_to_pay = models.PositiveSmallIntegerField(default=30)
 
     address1 = models.TextField()
     address2 = models.CharField(
@@ -99,6 +100,9 @@ class Invoice(BaseModel):
     def __str__(self):
         return "INV " + self.invoice_number
 
+    @property
+    def download_file_name(self):
+        return f"invoice_{self.organization.short_name.replace(' ', '').lower()}_{self.invoice_number}.pdf"
 
 
 class HourlyRate(BaseModel):
@@ -112,7 +116,7 @@ class HourlyRate(BaseModel):
     )
 
     def __str__(self):
-        return "Rate " + str(self.rate)
+        return "Rate " + str(self.rate) + f" ({self.organization})"
 
 
 

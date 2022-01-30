@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block 'body' %}
+    <div>
+        <h4>Organizations</h4>
+    </div>
+    <div>
+        <ul>
+            {% for org in orgs %}
+                <li>
+                    <a
+                        href="{% url 'page-org' orgId=org.id %}"
+                    >
+                        {{ org.legal_name }}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}

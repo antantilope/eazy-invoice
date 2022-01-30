@@ -1,0 +1,48 @@
+
+body, table {
+    font-size: 16pt;
+}
+
+.section {
+    border: 1px solid gray;
+    padding-left: 8px;
+}
+
+.mb-4 {
+    margin-bottom: 4px;
+}
+
+.mb-12 {
+    margin-bottom: 12px;
+}
+
+.total-row {
+    border-top: 3px solid teal;
+    border-bottom: 3px solid teal;
+}
+
+th {
+    text-align: left;
+    background-color: black;
+    color: white;
+    padding-right: 30px;
+    padding-left: 5px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+td {
+    text-align: left;
+    border-bottom: 1px solid teal;
+    padding-right: 20px;
+}
+
+table {
+    border-collapse: collapse;
+    width:100%;
+}
+
+.highlight {
+    font-weight: bold;
+    background-color: yellow;
+}

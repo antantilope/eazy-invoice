@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block 'body' %}
+    <div>
+        {% if error %}
+            <div class="mb-med error-alert">
+                {{ error }}
+            </div>
+        {% endif %}
+        <form method="POST" action="{% url 'page-login' %}">
+            {% csrf_token %}
+            <div class="mb-small">
+                <input placeholder="username" name="username">
+            </div>
+            <div class="mb-small">
+                <input type="password" placeholder="password" name="password">
+            </div>
+            <div class="mb-small">
+                <input placeholder="auth code" name="authcode">
+            </div>
+            <div class="mb-small">
+                <input type="submit" value="login">
+            </div>
+        </form>
+    </div>
+{% endblock %}

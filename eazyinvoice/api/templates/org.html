@@ -1,0 +1,172 @@
+{% extends 'base.html' %}
+{% block 'body' %}
+<div class="mb-lg">
+    <h2>{{ org.legal_name }}</h2>
+</div>
+<div class="mb-lg section">
+    <h3>Log Hours</h3>
+    <div>
+        <input class="mb-med" type="date" value="{{ today }}" id="add-hours-date">
+    </div>
+    <div>
+        <input class="mb-med" type="number" placeholder="hours quantity" id="add-hours-quantity">
+    </div>
+    <div>
+        <input class="mb-med" type="text" placeholder="description" id="add-hours-description" style="width:80%">
+    </div>
+    <div>
+        Rate:
+        <select class="mb-med" id="add-hours-rate-select">
+            {% for rate in rates %}
+            <option value="{{ rate.id }}">
+                {{ rate.rate }}
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+    <div>
+        <button class="mb-med" id="add-hours-btn">
+            Add Hours
+        </button>
+    </div>
+</div>
+<div class="mb-lg section">
+    <h3>Hours to Invoice</h3>
+    <table class="mb-lg">
+        <tr>
+            <th>Date</th>
+            <th>Desc</th>
+            <th>Rate</th>
+            <th>Quantity</th>
+            <th></th>
+        </tr>
+        {% for entry in entries_to_invoice %}
+        <tr>
+            <td>
+                {{ entry.date }}
+            </td>
+            <td>
+                {{ entry.description }}
+            </td>
+            <td>
+                {{ entry.rate__rate }}
+            </td>
+            <td>
+                {{ entry.quantity }}
+            </td>
+            <td>
+                <button onclick="deleteEntry('{{ entry.id }}')">
+                    🗑️
+                </button>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    <div>
+        {% if entries_to_invoice %}
+            <button onclick="createInvoice()">
+                Create Invoice
+            </button>
+        {% endif %}
+    </div>
+</div>
+<div class="mb-lg section">
+    <h3>Invoices</h3>
+    <table class="mb-lg">
+        <tr>
+            <th>Number</th>
+            <th>Issued</th>
+            <th>Due</th>
+            <th>Amount</th>
+            <th></th>
+        </tr>
+        {% for inv in invoices %}
+            <tr>
+                <td>
+                    {{ inv.invoice_number }}
+                </td>
+                <td>
+                    {{ inv.issued_date }}
+                </td>
+                <td>
+                    {{ inv.due_date }}
+                </td>
+                <td>
+                    {{ inv.total_amount }}
+                </td>
+                <td>
+                    <a
+                        href="{% url 'page-invoice-download' orgId=org.id invoiceId=inv.id %}"
+                        target="_blank"
+                    >
+                        Download
+                    </a>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+</div>
+<script>
+    $(document).ready(async () => {
+        $("#add-hours-btn").click(async () => {
+            const nhDate = $("#add-hours-date").val()
+            const nhQuan = $("#add-hours-quantity").val()
+            const nhRate = $("#add-hours-rate-select").val()
+            const nhDesc = $("#add-hours-description").val() || null
+            const orgId = "{{ org.id }}"
+            if (!nhRate) {
+                return alert("hourly rate is required");
+            }
+            if (!nhDate) {
+                return alert("date is required");
+            }
+            if (!nhQuan || !/^\d+\.?\d*$/.test(nhQuan)) {
+                return alert("hours quantity is required");
+            }
+
+            $("#add-hours-btn").prop("disabled", true);
+            const resp = await postData(
+                "{% url 'api-new-hours-entry' orgId=org.id %}",
+                {
+                    rate_id: nhRate,
+                    ord_id: orgId,
+                    date: nhDate,
+                    quantity: nhQuan,
+                    description: nhDesc,
+                },
+            )
+            if (resp.status === 201) {
+                location.reload()
+            } else {
+                $("#add-hours-btn").prop("disabled", false);
+                alert("An error occured")
+            }
+        })
+    })
+    async function deleteEntry(entryId) {
+        if (!confirm("Are you sure you want to delete entry " + entryId)) {
+            return
+        }
+        const url = `/api/orgs/{{ org.id }}/entry/${entryId}/delete/`
+        const resp = await postData(url, {})
+        if (resp.status === 204) {
+            location.reload()
+        } else {
+            alert("An error occured")
+        }
+    }
+
+    async function createInvoice() {
+        if (!confirm("Are you sure you want to create a new invoice?")) {
+            return
+        }
+        const url = "{% url 'api-create-invoice' orgId=org.id %}"
+        const resp = await postData(url, {})
+        if (resp.status === 201) {
+            location.reload()
+        } else {
+            alert("An error occured")
+        }
+    }
+</script>
+{% endblock %}
