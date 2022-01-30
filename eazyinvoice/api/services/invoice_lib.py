@@ -164,7 +164,7 @@ def create_invoice_html(invoice: Invoice) -> StringIO:
 
     # Details Section
     entries = HoursEntry.objects.filter(invoice=invoice).order_by("-created_at")
-    html.write('<div class="mb-4">')
+    html.write('<div class="mb-12">')
     html.write('<div class="mb-4">HOURLY DETAILS</div>')
     html.write('<table><tr><th>Date</th><th>Description</th><th>Hours</th><th>Rate</th><th>Total</th></tr>')
     total_hours = Decimal(0)
@@ -189,8 +189,10 @@ def create_invoice_html(invoice: Invoice) -> StringIO:
     html.write(
         f'<tr class="total-row"><td><strong>TOTAL</strong></td><td></td><td>{escape(total_hours)}</td><td>$ {escape(avg_rate)}</td><td class="highlight">$ {escape(total_amount)}</td></tr>'
     )
-
     html.write('</table></div>')
+
+    # Add bottom message.
+    html.write('<div class="mb-4"><em>Please reach out if you have any questions.</em></div>')
 
     # Close off file.
     html.write('</body>')
