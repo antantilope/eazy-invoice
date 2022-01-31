@@ -132,6 +132,8 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "api/templates/static"),
 ]
+# Directory for whitenoise to serve static files from.
+STATIC_ROOT = os.path.join(BASE_DIR, "eazyinvoice", "static_root")
 
 LOGIN_URL = '/login/'
 
