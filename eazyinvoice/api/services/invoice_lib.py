@@ -41,7 +41,7 @@ def get_next_invoice_number(org: Organization) -> str:
     else:
         next_counter = 1
 
-    return f"{org.short_name.lower()}_{this_year}_{next_counter}"
+    return f"{org.short_name.replace(' ', '').lower()}_{this_year}_{next_counter}"
 
 
 @transaction.atomic
@@ -144,9 +144,9 @@ def create_invoice_html(invoice: Invoice) -> StringIO:
 
     # Invoice details section
     html.write('<div class="mb-4 section">')
-    html.write(f'<div><strong>Invoice #</strong> {invoice.invoice_number}</div>')
-    html.write(f'<div><strong>Date</strong> {invoice.issued_date.strftime("%b %d %Y")}</div>')
-    html.write(f'<div><strong>Due Date</strong> {invoice.due_date.strftime("%b %d %Y")}</div>')
+    html.write(f'<div><strong>Invoice #</strong> {escape(invoice.invoice_number)}</div>')
+    html.write(f'<div><strong>Date</strong> {escape(invoice.issued_date.strftime("%b %d %Y"))}</div>')
+    html.write(f'<div><strong>Due Date</strong> {escape(invoice.due_date.strftime("%b %d %Y"))}</div>')
     html.write('</div>')
 
     # Invoice payer section
