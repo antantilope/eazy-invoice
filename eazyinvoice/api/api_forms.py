@@ -1,6 +1,8 @@
 
 from django import forms
 
+from api.models import Organization
+
 
 class NewHoursEntryForm(forms.Form):
     rate_id = forms.CharField(max_length=255)
@@ -12,3 +14,16 @@ class NewHoursEntryForm(forms.Form):
         required=False,
         empty_value=None,
     )
+
+
+class RunQueryForm(forms.Form):
+    organizations = forms.ModelMultipleChoiceField(
+        queryset=Organization.objects.all()
+    )
+    invoice_paid_start_date = forms.DateField(
+        required=False,
+    )
+    invoice_paid_end_date = forms.DateField(
+        required=False,
+    )
+    is_paid = forms.BooleanField(required=False)

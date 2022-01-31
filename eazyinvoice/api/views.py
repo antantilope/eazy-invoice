@@ -1,4 +1,5 @@
 
+import csv
 from io import BytesIO
 
 from django.urls import reverse
@@ -83,8 +84,6 @@ def orgs(request):
         .order_by('short_name')
         .values("id", "legal_name",)
     )
-    if orglist.count() == 1:
-        return redirect("page-org", orgId=orglist.first()['id'])
     return render(
         request,
         "orgs.html",
@@ -136,4 +135,21 @@ def download_invoice(request, orgId: str, invoiceId: str):
         BytesIO(invoiceFile),
         as_attachment=True,
         filename=invoice.download_file_name,
+    )
+
+
+@require_GET
+@login_required
+def query_page(request):
+    organizations = Organization.objects.filter(user=request.user)
+    return render(
+        request,
+        "query.html",
+        {
+            "organizations": organizations,
+            'breadcrumbs': [
+                {'value':'org list', 'href':reverse("page-orgs")},
+                {'value': "Run Query"}
+            ]
+        },
     )

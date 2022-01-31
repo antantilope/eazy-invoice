@@ -1,6 +1,8 @@
+import csv
 
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
+from django.http import HttpResponse
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -9,6 +11,7 @@ from rest_framework import status
 from api.models import Organization, HourlyRate, HoursEntry, Invoice
 from api.api_forms import (
     NewHoursEntryForm,
+    RunQueryForm
 )
 from api.services import invoice_lib, notification_lib
 
@@ -111,3 +114,37 @@ def mark_invoice_paid(request, orgId: str, invoiceId: str):
     invoice.paid_at = timezone.now()
     invoice.save(update_fields=['is_paid', 'paid_at'])
     return Response({}, status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def run_query(request):
+    print(request.data)
+    form = RunQueryForm(request.data)
+    if not form.is_valid():
+        return Response(form.errors, status.HTTP_400_BAD_REQUEST)
+
+    org_ids = []
+    for org in form.cleaned_data['organizations']:
+        if org.user != request.user:
+            return Response("", status.HTTP_404_NOT_FOUND)
+        org_ids.append(org.id)
+
+    if not len(org_ids):
+        return Response("no orgs selected", status.HTTP_400_BAD_REQUEST)
+
+    invoice_paid_start_date = form.cleaned_data.get('invoice_paid_start_date')
+    invoice_paid_end_date = form.cleaned_data.get('invoice_paid_end_date')
+    is_paid = form.cleaned_data.get('is_paid', False)
+
+    now_ts = timezone.now().strftime('%Y%m%d_%H%M%S')
+    resp = HttpResponse(status=status.HTTP_200_OK)
+    resp['Content-Type'] = 'text/csv'
+    resp['Content-Disposition'] = f'attachment; filename="query_{now_ts}.csv"'
+
+    writer = csv.writer(resp)
+    for row in invoice_lib.get_invoice_csv_rows(
+        org_ids, is_paid, invoice_paid_start_date, invoice_paid_end_date
+    ):
+        writer.writerow(row)
+    return resp

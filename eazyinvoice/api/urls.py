@@ -15,6 +15,8 @@ urlpatterns = [
         views.download_invoice,
         name="page-invoice-download"
     ),
+    path('run_query/', api_views.run_query, name="page-run-query"),
+    path('query/', views.query_page, name="page-query"),
 
     # API views
     path(

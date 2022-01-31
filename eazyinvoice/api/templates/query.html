@@ -1,0 +1,68 @@
+
+{% extends 'base.html' %}
+{% block 'body' %}
+<div class="mb-lg">
+    <h2>Query</h2>
+</div>
+
+<div class="mb-small">
+    Is Paid
+    <input type="checkbox" id="is-paid-input">
+</div>
+<div class="mb-small">
+    Paid After
+    <input type="date" id="paid-after-input">
+</div>
+<div class="mb-small">
+    Paid Before
+    <input type="date" id="paid-before-input">
+</div>
+<div class="mb-small">
+    <select id="org-select-input" style="min-width:300px;" multiple>
+        {% for org in organizations %}
+            <option value="{{ org.id }}">{{ org.short_name }}</option>
+        {% endfor %}
+    </select>
+</div>
+<div class="mb-small">
+    <button id="run-query-btn">
+        Run
+    </button>
+</div>
+<script>
+    $(document).ready(() => {
+        $("#is-paid-input").change(() => {
+            if(!$("#is-paid-input").prop("checked")) {
+                $("#paid-before-input").val("");
+                $("#paid-after-input").val("");
+            }
+        })
+
+        $("#run-query-btn").click(async () => {
+            const invoice_paid_start_date = $("#paid-after-input").val() || null
+            const invoice_paid_end_date = $("#paid-before-input").val() || null
+            const is_paid = $("#is-paid-input").prop("checked")
+            const organizations = $("#org-select-input").val()
+            if(!organizations.length) {
+                return alert("organization is required")
+            }
+            const data = {
+                invoice_paid_start_date,
+                invoice_paid_end_date,
+                is_paid,
+                organizations,
+            }
+            postData("{% url 'page-run-query' %}", data).then(res => {
+                return res.blob()
+            }).then(data => {
+                const fakea = document.createElement("a");
+                fakea.href = window.URL.createObjectURL(data);
+                fakea.download = "FILENAME.csv";
+                fakea.click();
+            })
+
+        })
+    })
+</script>
+
+{% endblock %}

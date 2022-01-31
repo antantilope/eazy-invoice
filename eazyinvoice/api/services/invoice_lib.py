@@ -1,4 +1,5 @@
 
+from collections import defaultdict
 from datetime import timedelta
 from decimal import Decimal
 from io import StringIO
@@ -18,6 +19,48 @@ from api.services import tmp_lib
 def round_dec(val: Decimal) -> Decimal:
     return val.quantize(Decimal("0.00"))
 
+
+def get_invoice_csv_rows(orgs: List[str], is_paid: bool, paid_start, paid_end):
+    yield [
+        "id",
+        "number",
+        "created_at",
+        "updated_at",
+        "org_name",
+        "is_paid",
+        "paid_at",
+        "amount",
+    ]
+
+    invoices = Invoice.objects.filter(organization__id__in=orgs)
+    invoices = invoices.filter(is_paid=is_paid)
+
+    if is_paid and paid_start is not None:
+        invoices = invoices.filter(paid_at__gte=paid_start, paid_at__isnull=False)
+
+    if is_paid and paid_end is not None:
+        invoices = invoices.filter(paid_at__lte=paid_end, paid_at__isnull=False)
+
+
+    entries = HoursEntry.objects.filter(invoice__in=invoices).values("invoice_id", "quantity", "rate__rate")
+    totals_by_inv = defaultdict(int)
+    for entry in entries:
+        totals_by_inv[entry['invoice_id']] += round_dec(entry['quantity'] * entry['rate__rate'])
+
+    for inv in invoices.values(
+        "id", "invoice_number", "created_at", "updated_at",
+        "organization__short_name", "is_paid", "paid_at"
+    ):
+        yield [
+            inv['id'],
+            inv['invoice_number'],
+            inv['created_at'],
+            inv['updated_at'],
+            inv['organization__short_name'],
+            inv['is_paid'],
+            inv['paid_at'],
+            totals_by_inv[inv['id']],
+        ]
 
 def get_next_invoice_number(org: Organization) -> str:
     # format is `<ORG.SHORT_NAME>_<YEAR>_<COUNTER>`
