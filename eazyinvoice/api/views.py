@@ -18,15 +18,15 @@ from eazyinvoice.secrets import get_auth_code
 @require_GET
 def landing_page(request):
     if not request.user.is_authenticated:
-        return redirect(reverse("page-login"))
-    return redirect(reverse("page-orgs"))
+        return redirect("page-login")
+    return redirect("page-orgs")
 
 
 @require_http_methods(["GET", "POST"])
 def login_user(request):
     if request.method.upper() == "GET":
         if request.user.is_authenticated:
-            return redirect(reverse("page-orgs"))
+            return redirect("page-orgs")
         return render(request, "login.html")
 
     elif request.method.upper() == "POST":
@@ -56,7 +56,7 @@ def login_user(request):
 
         if user is not None:
             login(request, user)
-            return redirect(reverse("page-orgs"))
+            return redirect("page-orgs")
         else:
             return render(
                 request,
@@ -71,7 +71,7 @@ def login_user(request):
 @login_required
 def logout_user(requst):
     logout(requst)
-    return redirect(reverse("page-login"))
+    return redirect("page-login")
 
 
 @require_GET
