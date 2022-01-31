@@ -60,4 +60,6 @@ $ ./test
 
 ### Usage
 
- -Organizations, Hourly Rates, Users, and UserProfiles are manager through Django Admin.
+ - Organizations, Hourly Rates, Users, and UserProfiles are manager through Django Admin.
+ - Eazy Invoice is meant to be a self hosted solution for a small number of people.
+
