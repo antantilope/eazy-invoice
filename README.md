@@ -8,7 +8,7 @@
 
 ### Screenshots
 
-Generated Invoice
+Generated Invoice PDF
 
 ![Screenshot_20220130_202621](https://user-images.githubusercontent.com/20848221/151727250-3a9bf0c4-2854-4793-933f-2df7cda00100.png)
 
