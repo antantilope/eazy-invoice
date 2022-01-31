@@ -166,7 +166,7 @@ def create_invoice_html(invoice: Invoice) -> StringIO:
     entries = HoursEntry.objects.filter(invoice=invoice).order_by("-created_at")
     html.write('<div class="mb-12">')
     html.write('<div class="mb-4">HOURLY DETAILS</div>')
-    html.write('<table><tr><th>Date</th><th>Description</th><th>Hours</th><th>Rate</th><th>Total</th></tr>')
+    html.write('<table><tr><th>Date</th><th>Description</th><th>Quantity</th><th>Rate</th><th>Total</th></tr>')
     total_hours = Decimal(0)
     total_amount = Decimal(0)
     for entry in entries:
