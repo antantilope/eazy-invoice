@@ -3,6 +3,7 @@ import uuid
 
 from django.db import models
 from django.contrib.auth import get_user_model
+from django.utils import timezone
 
 
 class BaseModel(models.Model):
@@ -102,7 +103,7 @@ class Invoice(BaseModel):
 
     @property
     def download_file_name(self):
-        return f"invoice_{self.organization.short_name.replace(' ', '').lower()}_{self.invoice_number}.pdf"
+        return f"invoice_{timezone.now().strftime('%Y%m%d_%H%M%S')}_{self.invoice_number}.pdf"
 
 
 class HourlyRate(BaseModel):

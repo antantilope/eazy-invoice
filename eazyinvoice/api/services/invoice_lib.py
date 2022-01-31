@@ -5,11 +5,11 @@ from io import StringIO
 import os
 from typing import List, Dict
 
-from django.utils.html import escape
+from django.conf import settings
 from django.db import transaction
 from django.db.models import QuerySet
 from django.utils import timezone
-from django.conf import settings
+from django.utils.html import escape
 import pdfkit
 
 from api.models import HoursEntry, Organization, Invoice
@@ -27,7 +27,7 @@ def get_next_invoice_number(org: Organization) -> str:
         .filter(
             organization=org,
             created_at__year__gte=this_year,
-            invoice_number__startswith=f"{org.short_name.lower()}_{this_year}_",
+            invoice_number__startswith=f"{org.short_name.replace(' ', '').lower()}_{this_year}_",
         )
         .order_by("-created_at")
         [:5]
@@ -163,7 +163,7 @@ def create_invoice_html(invoice: Invoice) -> StringIO:
     html.write('</div>')
 
     # Details Section
-    entries = HoursEntry.objects.filter(invoice=invoice).order_by("-created_at")
+    entries = HoursEntry.objects.filter(invoice=invoice).order_by("date", "-created_at")
     html.write('<div class="mb-12">')
     html.write('<div class="mb-4">HOURLY DETAILS</div>')
     html.write('<table><tr><th>Date</th><th>Description</th><th>Quantity</th><th>Rate</th><th>Total</th></tr>')

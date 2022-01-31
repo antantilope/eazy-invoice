@@ -9,7 +9,7 @@ from api.models import Organization, HourlyRate, HoursEntry, Invoice
 from api.api_forms import (
     NewHoursEntryForm,
 )
-from api.services import invoice_lib
+from api.services import invoice_lib, notification_lib
 
 
 @api_view(['POST'])
@@ -35,6 +35,9 @@ def new_hours_entry(request, orgId: str):
         description=form.cleaned_data.get('description'),
     )
 
+    notification_lib.send_admin_alert(
+        "New hour entry created for " + org.short_name
+    )
     return Response({}, status.HTTP_201_CREATED)
 
 
@@ -49,6 +52,9 @@ def delete_hours_entry(request, orgId: str, entryId: str):
             status.HTTP_400_BAD_REQUEST,
         )
     entry.delete()
+    notification_lib.send_admin_alert(
+        "Hours entry deleted: " + entryId
+    )
     return Response({}, status.HTTP_204_NO_CONTENT)
 
 
@@ -68,6 +74,9 @@ def create_invoice(request, orgId: str):
         )
 
     invoice = invoice_lib.create_invoice_for_entries(org, entries)
+    notification_lib.send_admin_alert(
+        "New invoice created: " + invoice.invoice_number
+    )
     return Response({'id': invoice.id}, status.HTTP_201_CREATED)
 
 
@@ -81,4 +90,7 @@ def delete_invoice(request, orgId: str, invoiceId: str):
         id=invoiceId,
     )
     invoice.delete()
+    notification_lib.send_admin_alert(
+        "Invoice deleted: " + invoiceId
+    )
     return Response({}, status.HTTP_204_NO_CONTENT)

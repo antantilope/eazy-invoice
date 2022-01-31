@@ -141,6 +141,10 @@ STATIC_ROOT = os.path.join(BASE_DIR, "eazyinvoice", "static_root")
 
 LOGIN_URL = '/login/'
 
+# Pushover tokens
+PUSHOVER_APP_TOKEN = secrets.PUSHOVER_APP_TOKEN
+PUSHOVER_ADMIN_USER = secrets.PUSHOVER_ADMIN_USER
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 

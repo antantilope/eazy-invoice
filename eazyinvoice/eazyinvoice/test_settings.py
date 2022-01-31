@@ -4,6 +4,7 @@ from eazyinvoice.settings import *
 
 
 IS_PROD = False
+DEBUG = True
 
 # Faster insecure hashing for testing only
 PASSWORD_HASHERS = [
