@@ -71,13 +71,14 @@
     </div>
 </div>
 <div class="mb-lg section">
-    <h3>Invoices</h3>
+    <h3>Unpaid Invoices</h3>
     <table class="mb-lg">
         <tr>
             <th>Number</th>
             <th>Issued</th>
             <th>Due</th>
             <th>Amount</th>
+            <th></th>
             <th></th>
             <th></th>
         </tr>
@@ -102,6 +103,11 @@
                     >
                         Download
                     </a>
+                </td>
+                <td>
+                    <button onclick="markPaid('{{ inv.id }}')">
+                        Mark Paid
+                    </button>
                 </td>
                 <td>
                     <button onclick="deleteInvoice('{{ inv.id }}')">
@@ -183,6 +189,19 @@
         const url = `/api/orgs/{{ org.id }}/invoice/${invoiceId}/delete/`
         const resp = await postData(url, {})
         if (resp.status === 204) {
+            location.reload()
+        } else {
+            alert("An error occured")
+        }
+    }
+
+    async function markPaid(invoiceId) {
+        if (!confirm("Are you sure you want to mark invoice as paid " + invoiceId + "?")) {
+            return
+        }
+        const url = `/api/orgs/{{ org.id }}/invoice/${invoiceId}/paid/`
+        const resp = await postData(url, {})
+        if (resp.status === 200) {
             location.reload()
         } else {
             alert("An error occured")

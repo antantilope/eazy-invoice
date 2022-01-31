@@ -37,4 +37,9 @@ urlpatterns = [
         api_views.delete_invoice,
         name="api-delete-invoice",
     ),
+    path(
+        'api/orgs/<slug:orgId>/invoice/<slug:invoiceId>/paid/',
+        api_views.mark_invoice_paid,
+        name="api-delete-invoice",
+    ),
 ]

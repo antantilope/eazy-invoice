@@ -1,5 +1,6 @@
 
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -94,3 +95,19 @@ def delete_invoice(request, orgId: str, invoiceId: str):
         "Invoice deleted: " + invoiceId
     )
     return Response({}, status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def mark_invoice_paid(request, orgId: str, invoiceId: str):
+    org = get_object_or_404(Organization, id=orgId, user=request.user)
+    invoice = get_object_or_404(
+        Invoice,
+        organization=org,
+        id=invoiceId,
+        is_paid=False,
+    )
+    invoice.is_paid = True
+    invoice.paid_at = timezone.now()
+    invoice.save(update_fields=['is_paid', 'paid_at'])
+    return Response({}, status.HTTP_200_OK)

@@ -64,9 +64,8 @@ def create_invoice_for_entries(
 def get_created_invoices_data(org: Organization) -> List[Dict]:
     invoices = (Invoice
         .objects
-        .filter(organization=org)
+        .filter(organization=org, is_paid=False)
         .order_by("-created_at")
-        [:20]
     )
     entries = (HoursEntry
         .objects

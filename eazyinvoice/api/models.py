@@ -91,6 +91,8 @@ class Invoice(BaseModel):
     invoice_number = models.CharField(
         max_length=255,
     )
+    is_paid = models.BooleanField(default=False)
+    paid_at = models.DateTimeField(blank=True, null=True, default=None)
 
     class Meta:
         unique_together = (
