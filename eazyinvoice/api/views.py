@@ -83,6 +83,8 @@ def orgs(request):
         .order_by('short_name')
         .values("id", "legal_name",)
     )
+    if orglist.count() == 1:
+        return redirect("page-org", orgId=orglist.first()['id'])
     return render(
         request,
         "orgs.html",
