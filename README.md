@@ -55,3 +55,9 @@ $ ./manage.py runserver
 ```bash
 $ ./test
 ```
+
+<hr>
+
+### Usage
+
+ -Organizations, Hourly Rates, Users, and UserProfiles are manager through Django Admin.
