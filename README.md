@@ -30,6 +30,7 @@ $ touch eazyinvoice/eazyinvoice/secrets.py
 # Example secrets.py (don't commit this file)
 SECRET_KEY = "SECRET"
 IS_PROD = False
+USE_HTTPS = False
 ALLOWED_HOSTS = ["*"]
 
 def get_auth_code():

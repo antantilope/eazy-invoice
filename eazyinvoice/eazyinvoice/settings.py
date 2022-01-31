@@ -15,8 +15,6 @@ from pathlib import Path
 
 from eazyinvoice import secrets
 
-print(secrets.get_auth_code())
-
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -29,7 +27,13 @@ INVOICE_CSS_PATH = os.path.join(BASE_DIR, 'api', 'templates', 'invoice.css')
 SECRET_KEY = secrets.SECRET_KEY
 DEBUG = not secrets.IS_PROD
 ALLOWED_HOSTS = secrets.ALLOWED_HOSTS
+SESSION_COOKIE_SECURE = secrets.USE_HTTPS
+CSRF_COOKIE_SECURE = secrets.USE_HTTPS
+PROTOCOL = "https" if secrets.USE_HTTPS else "http"
 
+
+if DEBUG:
+    print("AUTH CODE", secrets.get_auth_code())
 
 # Application definition
 
