@@ -128,7 +128,7 @@ def create_invoice_html(invoice: Invoice) -> StringIO:
     # html.write('<style>body { font-family:arial; margin:10px; }</style>')
     html.write('</head>')
     html.write('<body>')
-    html.write('<div class="mb-4"><strong><em>INVOICE</em></strong></div>')
+    html.write(f'<div><strong><em>INVOICE</em></strong> #{escape(invoice.invoice_number)}</div>')
 
     # Payee section
     html.write('<div class="mb-4 section">')
