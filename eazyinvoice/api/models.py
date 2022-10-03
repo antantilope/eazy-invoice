@@ -15,7 +15,13 @@ class BaseModel(models.Model):
         abstract = True
 
 
+class USERAPPS:
+    USER_ACCESS_INVOICING = "invoicing"
+    USER_ACCESS_ICIT = "icit"
+
+
 class UserProfile(BaseModel):
+
     user = models.OneToOneField(
         get_user_model(),
         on_delete=models.CASCADE,
@@ -39,6 +45,9 @@ class UserProfile(BaseModel):
     zipcode = models.CharField(
         max_length=24,
     )
+
+    user_access = models.CharField(max_length=255)
+
 
     def __str__(self):
         return "UP " + self.user.username

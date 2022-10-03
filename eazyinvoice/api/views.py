@@ -5,11 +5,15 @@ from django.urls import reverse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
-from django.http.response import HttpResponseBadRequest, FileResponse
+from django.http.response import (
+    HttpResponse,
+    HttpResponseBadRequest,
+    FileResponse,
+)
 from django.views.decorators.http import require_GET, require_http_methods
 from django.utils import timezone
 
-from api.models import HoursEntry, Organization, Invoice
+from api.models import HoursEntry, Organization, Invoice, USERAPPS
 from api.login_form import LoginForm
 from api.services import invoice_lib
 from eazyinvoice.secrets import get_auth_code
@@ -19,14 +23,24 @@ from eazyinvoice.secrets import get_auth_code
 def landing_page(request):
     if not request.user.is_authenticated:
         return redirect("page-login")
-    return redirect("page-orgs")
+    if USERAPPS.USER_ACCESS_INVOICING in request.user.userprofile.user_access:
+        return redirect("page-orgs")
+    elif USERAPPS.USER_ACCESS_ICIT in request.user.userprofile.user_access:
+        return redirect("icit-landing")
+    else:
+        raise NotImplementedError
 
 
 @require_http_methods(["GET", "POST"])
 def login_user(request):
     if request.method.upper() == "GET":
         if request.user.is_authenticated:
-            return redirect("page-orgs")
+            if USERAPPS.USER_ACCESS_INVOICING in request.user.userprofile.user_access:
+                return redirect("page-orgs")
+            elif USERAPPS.USER_ACCESS_ICIT in request.user.userprofile.user_access:
+                return redirect("icit-landing")
+            else:
+                raise NotImplementedError
         return render(request, "login.html")
 
     elif request.method.upper() == "POST":
@@ -56,7 +70,12 @@ def login_user(request):
 
         if user is not None:
             login(request, user)
-            return redirect("page-orgs")
+            if USERAPPS.USER_ACCESS_INVOICING in request.user.userprofile.user_access:
+                return redirect("page-orgs")
+            elif USERAPPS.USER_ACCESS_ICIT in request.user.userprofile.user_access:
+                return redirect("icit-landing")
+            else:
+                raise NotImplementedError
         else:
             return render(
                 request,
@@ -77,6 +96,8 @@ def logout_user(requst):
 @require_GET
 @login_required
 def orgs(request):
+    if USERAPPS.USER_ACCESS_INVOICING not in request.user.userprofile.user_access:
+        return HttpResponse('Unauthorized', status=401) 
     orglist = (Organization
         .objects
         .filter(user=request.user)
@@ -95,6 +116,8 @@ def orgs(request):
 @require_GET
 @login_required
 def org(request, orgId: str):
+    if USERAPPS.USER_ACCESS_INVOICING not in request.user.userprofile.user_access:
+        return HttpResponse('Unauthorized', status=401)
     org = get_object_or_404(Organization, id=orgId, user=request.user)
     rates = org.hourlyrate_set.order_by("-rate").values("id", "rate")
     entries_to_invoice = (HoursEntry
@@ -125,6 +148,8 @@ def org(request, orgId: str):
 @require_GET
 @login_required
 def download_invoice(request, orgId: str, invoiceId: str):
+    if USERAPPS.USER_ACCESS_INVOICING not in request.user.userprofile.user_access:
+        return HttpResponse('Unauthorized', status=401)
     org = get_object_or_404(Organization, id=orgId, user=request.user)
     invoice = get_object_or_404(
         Invoice,
