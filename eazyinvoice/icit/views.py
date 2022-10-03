@@ -57,19 +57,23 @@ class UsernameForm(forms.Form):
 @permission_classes([])
 def record_messages(request):
 
-    secret_token = request.META.get('x-secret-token')
+    ua = request.META.get('HTTP_USER_AGENT')
+    if ua != "dummypuncher":
+        return Response("ua", 403)
+
+    secret_token = request.META.get('HTTP_X_SECRET_TOKEN')
     if not secret_token:
-        return Response("", 403)
+        return Response("secret", 403)
     validate_secret_token(secret_token)
 
-    token = request.META.get('x-auth-token')
+    token = request.META.get('HTTP_X_AUTH_TOKEN')
     if not token:
-        return Response("", 403)
+        return Response("auth", 403)
     
     thash = create_md5_hash(token)
     db_thash = DummyMachineToken.objects.first().token_hash
     if thash != db_thash:
-        return Response("", 403)
+        return Response("hash", 403)
     
     messages = []
     for msg in request.data.get("messages", []):
@@ -102,19 +106,26 @@ def record_messages(request):
 @permission_classes([])
 def get_state(request):
 
-    secret_token = request.META.get('x-secret-token')
+    ua = request.META.get('HTTP_USER_AGENT')
+    if ua != "dummypuncher":
+        return Response("ua", 403)
+
+    secret_token = request.META.get('HTTP_X_SECRET_TOKEN')
     if not secret_token:
-        return Response("", 403)
+        return Response("secret", 403)
     validate_secret_token(secret_token)
 
-    token = request.META.get('x-auth-token')
+    token = request.META.get('HTTP_X_AUTH_TOKEN')
     if not token:
-        return Response("", 403)
+        return Response("auth", 403)
     
     thash = create_md5_hash(token)
     db_thash = DummyMachineToken.objects.first().token_hash
     if thash != db_thash:
-        return Response("", 403)
+        return Response("hash", 403)
     
-    icit_states = IcitState.objects.values("user__username", "should_be_logged_in")
+    icit_states = IcitState.objects.values(
+        "user__username",
+        "should_be_logged_in",
+    )
     return Response(icit_states, 200)
