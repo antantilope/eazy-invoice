@@ -15,6 +15,7 @@ class IcitState(models.Model):
 
     should_be_logged_in = models.BooleanField()
 
+
 class IcitMessage(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -23,6 +24,7 @@ class IcitMessage(models.Model):
         on_delete=models.CASCADE,
     )
     message = models.TextField()
+
 
 class DummyMachineToken(models.Model):
     token_hash = models.TextField()

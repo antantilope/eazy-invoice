@@ -11,6 +11,14 @@ urlpatterns = [
     path('toggle/', views.toggle_state, name="icit-toggle-state"),
 
     # API Views
-    path('api/record_messages/', csrf_exempt(views.record_messages)),
-    path('api/get_target_states/', csrf_exempt(views.get_state)),
+    path(
+        'api/record_messages/',
+        csrf_exempt(views.record_messages),
+        name="icit-api-record-message",
+    ),
+    path(
+        'api/get_target_states/',
+        csrf_exempt(views.get_state),
+        name="icit-api-get-target-state",
+    ),
 ]

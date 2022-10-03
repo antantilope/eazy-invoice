@@ -17,7 +17,7 @@ class InvalidSecretToken(Exception):
 def validate_secret_token(val: str) -> None:
     try:
         int_val = int(val)
-    except ValueError:
+    except (ValueError, TypeError):
         raise InvalidSecretToken
     
     if int_val % get_cors_secret_int() != 0:

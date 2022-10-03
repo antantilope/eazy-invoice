@@ -101,6 +101,12 @@ def record_messages(request):
 @api_view(['GET'])
 @permission_classes([])
 def get_state(request):
+
+    secret_token = request.META.get('x-secret-token')
+    if not secret_token:
+        return Response("", 403)
+    validate_secret_token(secret_token)
+
     token = request.META.get('x-auth-token')
     if not token:
         return Response("", 403)
