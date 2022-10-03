@@ -13,7 +13,7 @@ from rest_framework.response import Response
 
 from icit.models import IcitState, DummyMachineToken, IcitMessage
 from api.models import USERAPPS
-from icit.services import create_md5_hash
+from icit.services import create_md5_hash, validate_secret_token
 
 
 @login_required
@@ -48,12 +48,20 @@ def toggle_state(request):
 
 class MessageForm(forms.Form):
     message = forms.CharField(required=True, max_length=1000)
+
+class UsernameForm(forms.Form):
     username = forms.CharField(required=True, max_length=255)
 
 
 @api_view(['POST'])
 @permission_classes([])
-def record_message(request):
+def record_messages(request):
+
+    secret_token = request.META.get('x-secret-token')
+    if not secret_token:
+        return Response("", 403)
+    validate_secret_token(secret_token)
+
     token = request.META.get('x-auth-token')
     if not token:
         return Response("", 403)
@@ -63,15 +71,30 @@ def record_message(request):
     if thash != db_thash:
         return Response("", 403)
     
-    msg_form = MessageForm(request.data)
-    if not msg_form.valid():
-        return Response("", 400)
+    messages = []
+    for msg in request.data.get("messages", []):
+        msg_form = MessageForm(msg)
+        if not msg_form.valid():
+            return Response("", 400)
+        else:
+            messages.append(msg_form.cleaned_data['message'])
+    if not len(messages):
+        Response("no messages", 400)
     
-    user = get_object_or_404(get_user_model(), username=msg_form.cleaned_data['username'])
-
-    IcitMessage.objects.create(
-        user=user, message=msg_form.cleaned_data['message']
+    username_form = UsernameForm(request.data)
+    if not username_form.valid():
+        return Response("", 400)
+    user = get_object_or_404(
+        get_user_model(),
+        username=username_form.cleaned_data['username']
     )
+
+    IcitMessage.objects.bulk_create([
+        IcitMessage.objects.create(
+            user=user, message=m
+        )
+        for m in messages
+    ])
     return Response("", 201)
 
 
