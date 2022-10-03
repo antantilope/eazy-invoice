@@ -6,6 +6,7 @@ from django.http import HttpResponseNotFound
 
 urlpatterns = [
     path('', include("api.urls")),
+    path('icit/', include("icit.urls")),
     path('admin/login/', lambda requst: HttpResponseNotFound()),
     path('admin/logout/', lambda requst: HttpResponseNotFound()),
     path('admin/', admin.site.urls),
