@@ -20,7 +20,7 @@ from icit.services import create_md5_hash, validate_secret_token
 def icit_landing(request):
     if USERAPPS.USER_ACCESS_ICIT not in request.user.userprofile.user_access:
         return HttpResponse('Unauthorized', status=401)
-    
+
     icit_state = get_object_or_404(IcitState, user=request.user)
     messages = IcitMessage.objects.filter(user=request.user).order_by("-created_at")[:10]
 
@@ -36,7 +36,7 @@ def icit_landing(request):
 def toggle_state(request):
     if USERAPPS.USER_ACCESS_ICIT not in request.user.userprofile.user_access:
         return HttpResponse('Unauthorized', status=401)
-    
+
     icit_state = get_object_or_404(IcitState, user=request.user)
     icit_state.should_be_logged_in = not icit_state.should_be_logged_in
     icit_state.save()
@@ -69,15 +69,15 @@ def record_messages(request):
     token = request.META.get('HTTP_X_AUTH_TOKEN')
     if not token:
         return Response("auth", 403)
-    
+
     thash = create_md5_hash(token)
     db_thash = DummyMachineToken.objects.first().token_hash
     if thash != db_thash:
         return Response("hash", 403)
-    
+
     print(request.data)
     print(type(request.data))
-    
+
     messages = []
     for msg in request.data.get("messages", []):
         msg_form = MessageForm(msg)
@@ -87,7 +87,7 @@ def record_messages(request):
             messages.append(msg_form.cleaned_data['message'])
     if not len(messages):
         Response("no messages", 400)
-    
+
     username_form = UsernameForm(request.data)
     if not username_form.is_valid():
         return Response("", 400)
@@ -97,7 +97,7 @@ def record_messages(request):
     )
 
     IcitMessage.objects.bulk_create([
-        IcitMessage.objects.create(
+        IcitMessage(
             user=user, message=m
         )
         for m in messages
@@ -121,12 +121,12 @@ def get_state(request):
     token = request.META.get('HTTP_X_AUTH_TOKEN')
     if not token:
         return Response("auth", 403)
-    
+
     thash = create_md5_hash(token)
     db_thash = DummyMachineToken.objects.first().token_hash
     if thash != db_thash:
         return Response("hash", 403)
-    
+
     icit_states = IcitState.objects.values(
         "user__username",
         "should_be_logged_in",
