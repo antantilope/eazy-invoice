@@ -78,7 +78,7 @@ def record_messages(request):
     messages = []
     for msg in request.data.get("messages", []):
         msg_form = MessageForm(msg)
-        if not msg_form.valid():
+        if not msg_form.is_valid():
             return Response("", 400)
         else:
             messages.append(msg_form.cleaned_data['message'])
@@ -86,7 +86,7 @@ def record_messages(request):
         Response("no messages", 400)
     
     username_form = UsernameForm(request.data)
-    if not username_form.valid():
+    if not username_form.is_valid():
         return Response("", 400)
     user = get_object_or_404(
         get_user_model(),
