@@ -75,6 +75,9 @@ def record_messages(request):
     if thash != db_thash:
         return Response("hash", 403)
     
+    print(request.data)
+    print(type(request.data))
+    
     messages = []
     for msg in request.data.get("messages", []):
         msg_form = MessageForm(msg)
