@@ -166,7 +166,6 @@ def create_invoice_html(invoice: Invoice) -> StringIO:
     html.write('<div class="mb-12">')
     html.write('<div class="mb-4">HOURLY DETAILS</div>')
     html.write('<table><tr><th>Date</th><th>Description</th><th>Quantity</th><th>Rate</th><th>Total</th></tr>')
-    total_hours = Decimal(0)
     total_amount = Decimal(0)
     for entry in entries:
         html.write("<tr>")
@@ -179,14 +178,11 @@ def create_invoice_html(invoice: Invoice) -> StringIO:
         html.write(f'<td>$ {escape(total)}</td>')
         html.write("</tr>")
 
-        total_hours += entry.quantity
         total_amount += total
 
-    total_hours = round_dec(total_hours)
     total_amount = round_dec(total_amount)
-    avg_rate = round_dec(total_amount / total_hours)
     html.write(
-        f'<tr class="total-row"><td><strong>TOTAL</strong></td><td></td><td>{escape(total_hours)}</td><td>$ {escape(avg_rate)}</td><td class="highlight">$ {escape(total_amount)}</td></tr>'
+        f'<tr class="total-row"><td><strong>TOTAL</strong></td><td></td><td></td><td></td><td class="highlight">$ {escape(total_amount)}</td></tr>'
     )
     html.write('</table></div>')
 
