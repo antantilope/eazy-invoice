@@ -120,7 +120,7 @@ def org(request, orgId: str):
         .order_by('-created_at')
         .values("id", "date", "quantity", "description", "rate__rate")
     )
-    invoices = invoice_lib.get_created_invoices_data(org)
+    unpaid_invoices = invoice_lib.get_created_invoices_data(org)
     paid_invoices = invoice_lib.get_paid_invoices(org)
 
     return render(
@@ -129,7 +129,7 @@ def org(request, orgId: str):
         {
             "org": org,
             "rates": rates,
-            "invoices": invoices,
+            "invoices": unpaid_invoices,
             "paid_invoices": paid_invoices,
             "today": timezone.now().date().isoformat(),
             "entries_to_invoice": entries_to_invoice,
