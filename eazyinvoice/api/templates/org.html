@@ -118,6 +118,29 @@
         {% endfor %}
     </table>
 </div>
+<div class="mb-lg section">
+    <h3>Paid Invoices</h3>
+    <table class="mb-lg">
+        <tr>
+            <th>Number</th>
+            <th>Paid At</th>
+            <th>Amount</th>
+        </tr>
+        {% for inv in paid_invoices %}
+            <tr>
+                <td>
+                    {{ inv.invoice_number }}
+                </td>
+                <td>
+                    {{ inv.paid_at }}
+                </td>
+                <td>
+                    {{ inv.total_amount }}
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+</div>
 <script>
     $(document).ready(async () => {
         $("#add-hours-btn").click(async () => {

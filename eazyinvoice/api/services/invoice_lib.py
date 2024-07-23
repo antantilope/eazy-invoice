@@ -93,6 +93,35 @@ def get_created_invoices_data(org: Organization) -> List[Dict]:
         })
     return data
 
+def get_paid_invoices(org: Organization):
+    invoices = (Invoice
+        .objects
+        .filter(organization=org, is_paid=True)
+        .order_by("-created_at")
+    )
+    entries = (HoursEntry
+        .objects
+        .filter(invoice__in=invoices)
+        .values("invoice_id", "rate__rate", "quantity")
+    )
+    data = []
+    for inv in invoices:
+        entries_this_inv = [e for e in entries if e['invoice_id'] == inv.id]
+        entries_this_inv_ct = len(entries_this_inv)
+        if not entries_this_inv_ct:
+            continue
+
+        total_amount = round_dec(sum(
+            e['rate__rate'] * e['quantity']
+            for e in entries_this_inv
+        ))
+        data.append({
+            'id': inv.id,
+            'invoice_number': inv.invoice_number,
+            'total_amount': total_amount,
+            'paid_at': inv.paid_at,
+        })
+    return data
 
 def create_invoice_pdf(invoice: Invoice) -> bytes:
     htmlFp = create_invoice_html(invoice)
