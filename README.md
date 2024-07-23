@@ -73,40 +73,4 @@ $ ./test
 
 <hr>
 
-## ICIT Integration
-
-
-**Required Headers**
- - User-Agent
- - Host
- - x-auth-token
- - x-secret-token
-
-
-```
-
-
-POST /icit/api/record_messages/
-
-User-Agent:     dummypuncher
-Host:           eazyinvoice.com
-x-auth-token:   super-duper-secret
-x-secret-token: 5345
-
-{
-    "username": "foobar",
-    "messages": [
-        {"message": "hello world"},
-        {"message": "goodbye world"},
-    ]
-}
-
-_______________________________________
-
-GET /api/get_target_states/
-User-Agent:     dummypuncher
-x-auth-token:   super-duper-secret
-x-secret-token: 5345
-
-
 ```

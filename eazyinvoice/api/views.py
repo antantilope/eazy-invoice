@@ -25,8 +25,6 @@ def landing_page(request):
         return redirect("page-login")
     if USERAPPS.USER_ACCESS_INVOICING in request.user.userprofile.user_access:
         return redirect("page-orgs")
-    elif USERAPPS.USER_ACCESS_ICIT in request.user.userprofile.user_access:
-        return redirect("icit-landing")
     else:
         raise NotImplementedError
 
@@ -37,8 +35,6 @@ def login_user(request):
         if request.user.is_authenticated:
             if USERAPPS.USER_ACCESS_INVOICING in request.user.userprofile.user_access:
                 return redirect("page-orgs")
-            elif USERAPPS.USER_ACCESS_ICIT in request.user.userprofile.user_access:
-                return redirect("icit-landing")
             else:
                 raise NotImplementedError
         return render(request, "login.html")
@@ -72,8 +68,6 @@ def login_user(request):
             login(request, user)
             if USERAPPS.USER_ACCESS_INVOICING in request.user.userprofile.user_access:
                 return redirect("page-orgs")
-            elif USERAPPS.USER_ACCESS_ICIT in request.user.userprofile.user_access:
-                return redirect("icit-landing")
             else:
                 raise NotImplementedError
         else:
@@ -97,7 +91,7 @@ def logout_user(requst):
 @login_required
 def orgs(request):
     if USERAPPS.USER_ACCESS_INVOICING not in request.user.userprofile.user_access:
-        return HttpResponse('Unauthorized', status=401) 
+        return HttpResponse('Unauthorized', status=401)
     orglist = (Organization
         .objects
         .filter(user=request.user)

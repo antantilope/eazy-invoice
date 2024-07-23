@@ -17,7 +17,6 @@ class BaseModel(models.Model):
 
 class USERAPPS:
     USER_ACCESS_INVOICING = "invoicing"
-    USER_ACCESS_ICIT = "icit"
 
 
 class UserProfile(BaseModel):
